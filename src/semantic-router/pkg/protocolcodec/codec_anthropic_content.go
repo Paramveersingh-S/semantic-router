@@ -212,7 +212,8 @@ func anthropicResponseContentType(body json.RawMessage) (string, error) {
 }
 
 func validateAnthropicContentExtensions(block anthropicContentWire, providerOutput bool) error {
-	if len(block.Citations) > 0 {
+	trimmedCitations := bytes.TrimSpace(block.Citations)
+	if len(trimmedCitations) > 0 && !bytes.Equal(trimmedCitations, []byte("null")) {
 		return llmprotocol.NewError(llmprotocol.ErrorUnsupportedFeature, "unsupported_citations", "Anthropic citations are not supported by the neutral contract", nil)
 	}
 	if err := validateAnthropicToolCaller(block.Caller, providerOutput); err != nil {
